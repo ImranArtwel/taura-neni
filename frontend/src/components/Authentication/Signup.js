@@ -6,6 +6,7 @@ import { useToast } from "@chakra-ui/toast";
 import axios from "axios";
 import { useState } from "react";
 import { useHistory } from "react-router";
+import { ChatState } from "../../Context/ChatProvider";
 
 const Signup = () => {
   const [show, setShow] = useState(false);
@@ -19,6 +20,8 @@ const Signup = () => {
   const [password, setPassword] = useState();
   const [pic, setPic] = useState();
   const [picLoading, setPicLoading] = useState(false);
+
+  const { setUser } = ChatState();
 
   const submitHandler = async () => {
     setPicLoading(true);
@@ -69,6 +72,7 @@ const Signup = () => {
         position: "bottom",
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
+      setUser(data);
       setPicLoading(false);
       history.push("/chats");
     } catch (error) {
@@ -96,12 +100,13 @@ const Signup = () => {
       });
       return;
     }
-    console.log(pics);
+    console.log("image to upload", pics);
     if (pics.type === "image/jpeg" || pics.type === "image/png") {
       const data = new FormData();
       data.append("file", pics);
-      data.append("upload_preset", "chat-app");
-      data.append("cloud_name", "piyushproj");
+      data.append("folder", "react-chat-app");
+      data.append("upload_preset", "react-chat-app");
+      data.append("cloud_name", "dxxmf2iyf");
       fetch("https://api.cloudinary.com/v1_1/dxxmf2iyf/image/upload", {
         method: "post",
         body: data,
