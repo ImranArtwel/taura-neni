@@ -51,15 +51,15 @@ const MyChats = ({ fetchAgain }) => {
       flexDir="column"
       alignItems="center"
       p={3}
-      bg="white"
-      w={{ base: "100%", md: "31%" }}
+      bg="#0093AB"
+      w={{ base: "100%", md: "25%" }}
       borderRadius="lg"
       borderWidth="1px"
     >
       <Box
         pb={3}
         px={3}
-        fontSize={{ base: "28px", md: "30px" }}
+        fontSize={{ base: "28px", md: "20px" }}
         fontFamily="Work sans"
         d="flex"
         w="100%"
@@ -81,7 +81,7 @@ const MyChats = ({ fetchAgain }) => {
         d="flex"
         flexDir="column"
         p={3}
-        bg="#F8F8F8"
+        bg="#0093AB"
         w="100%"
         h="100%"
         borderRadius="lg"
@@ -100,7 +100,7 @@ const MyChats = ({ fetchAgain }) => {
                 borderRadius="lg"
                 key={chat._id}
               >
-                <Text>
+                <Text casing={"capitalize"}>
                   {!chat.isGroupChat
                     ? getSender(loggedUser, chat.users)
                     : chat.chatName}

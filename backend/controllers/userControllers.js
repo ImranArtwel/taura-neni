@@ -5,29 +5,27 @@ const generateToken = require("../config/generateToken");
 //@description     Get or Search all users
 //@route           GET /api/user?search=
 //@access          Public
-const allUsers = asyncHandler(async (req, res) => {
-  const keyword = req.query.search
+const getUsers = asyncHandler(async (authUser, searchQuery) => {
+  const keyword = searchQuery
     ? {
         $or: [
-          { name: { $regex: req.query.search, $options: "i" } },
-          { email: { $regex: req.query.search, $options: "i" } },
+          { name: { $regex: searchQuery, $options: "i" } },
+          { email: { $regex: searchQuery, $options: "i" } },
         ],
       }
     : {};
 
-  const users = await User.find(keyword).find({ _id: { $ne: req.user._id } });
-  res.send(users);
+  const users = await User.find(keyword).find({ _id: { $ne: authUser._id } });
+  return users;
 });
 
 //@description     Register new user
 //@route           POST /api/user/
 //@access          Public
-const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password, pic } = req.body;
-
+const createUser = asyncHandler(async (name, email, password, pic, res) => {
   if (!name || !email || !password) {
     res.status(400);
-    throw new Error("Please Enter all the Feilds");
+    throw new Error("Please Enter all the fields");
   }
 
   const userExists = await User.findOne({ email });
@@ -45,14 +43,16 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      isAdmin: user.isAdmin,
-      pic: user.pic,
-      token: generateToken(user._id),
-    });
+    res.status(201);
+    user.token = generateToken(user);
+    return user;
+    //   _id: user._id,
+    //   name: user.name,
+    //   email: user.email,
+    //   isAdmin: user.isAdmin,
+    //   pic: user.pic,
+    //   token: generateToken(user._id),
+    // });
   } else {
     res.status(400);
     throw new Error("User not found");
@@ -62,7 +62,7 @@ const registerUser = asyncHandler(async (req, res) => {
 //@description     Auth the user
 //@route           POST /api/users/login
 //@access          Public
-const authUser = asyncHandler(async (req, res) => {
+const userLogin = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
@@ -82,4 +82,4 @@ const authUser = asyncHandler(async (req, res) => {
   }
 });
 
-module.exports = { allUsers, registerUser, authUser };
+module.exports = { getUsers, createUser, userLogin };

@@ -51,7 +51,7 @@ const Login = () => {
         status: "success",
         duration: 5000,
         isClosable: true,
-        position: "bottom",
+        position: "top-right",
       });
       localStorage.setItem("userInfo", JSON.stringify(data));
       setLoading(false);

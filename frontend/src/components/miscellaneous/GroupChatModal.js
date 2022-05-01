@@ -46,10 +46,10 @@ const GroupChatModal = ({ children }) => {
   };
 
   const handleSearch = async (query) => {
-    setSearch(query);
     if (!query) {
       return;
     }
+    setSearch(query);
 
     try {
       setLoading(true);

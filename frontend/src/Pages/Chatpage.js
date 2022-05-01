@@ -5,14 +5,19 @@ import MyChats from "../components/MyChats";
 import SideDrawer from "../components/miscellaneous/SideDrawer";
 import { ChatState } from "../Context/ChatProvider";
 import { useRef } from "react";
+import { useHistory } from "react-router-dom";
 
 const Chatpage = () => {
   const [fetchAgain, setFetchAgain] = useState(false);
   const { user } = ChatState();
+  const history = useHistory();
   const User = useRef({});
   useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("userInfo"));
+
+    if (!user) history.push("/");
     User.current = user;
-  }, [user]);
+  }, [user, history]);
 
   return (
     <div style={{ width: "100%" }}>

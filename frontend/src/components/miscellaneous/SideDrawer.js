@@ -20,7 +20,7 @@ import { Tooltip } from "@chakra-ui/tooltip";
 import { BellIcon, ChevronDownIcon } from "@chakra-ui/icons";
 import { Avatar } from "@chakra-ui/avatar";
 import { useHistory } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useToast } from "@chakra-ui/toast";
 import ChatLoading from "../ChatLoading";
@@ -34,9 +34,24 @@ import { ChatState } from "../../Context/ChatProvider";
 
 function SideDrawer() {
   const [search, setSearch] = useState("");
+  const [allUsers, setAllUsers] = useState([]);
   const [searchResult, setSearchResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
+
+  useEffect(() => {
+    const fetchAllUsers = async () => {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      };
+
+      const { data } = await axios.get(`/api/user`, config);
+      setAllUsers(data);
+    };
+    fetchAllUsers();
+  }, []);
 
   const {
     setSelectedChat,
@@ -122,6 +137,18 @@ function SideDrawer() {
     }
   };
 
+  const displayUsers = () => {
+    const users = searchResult.length > 0 ? searchResult : allUsers;
+    return users.map((user) => (
+      <UserListItem
+        key={user._id}
+        user={user}
+        accessChat={() => accessChat(user._id)}
+        loadingChat={loadingChat}
+      />
+    ));
+  };
+
   return (
     <>
       <Box
@@ -175,8 +202,8 @@ function SideDrawer() {
               <Avatar
                 size="sm"
                 cursor="pointer"
-                name={user.name}
-                src={user.pic}
+                name={user?.name}
+                src={user?.pic}
               />
             </MenuButton>
             <MenuList>
@@ -204,17 +231,7 @@ function SideDrawer() {
               />
               <Button onClick={handleSearch}>Go</Button>
             </Box>
-            {loading ? (
-              <ChatLoading />
-            ) : (
-              searchResult?.map((user) => (
-                <UserListItem
-                  key={user._id}
-                  user={user}
-                  handleFunction={() => accessChat(user._id)}
-                />
-              ))
-            )}
+            {loading ? <ChatLoading /> : displayUsers()}
             {loadingChat && <Spinner ml="auto" d="flex" />}
           </DrawerBody>
         </DrawerContent>
